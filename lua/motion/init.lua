@@ -99,43 +99,56 @@ function M.range_inclusive_to_visual(p1, p2, context)
     return not u.pos_lt(pos_l, pos_f)
 end
 
---- Sets charwise range [`pos`, `initial_pos`) or [`initial_pos`, `pos`)
---- as positions for a custom motion. Positions are (1, 0) indexed.
+--- Modifies endpoints from range [`pos`, `initial_pos`) or [`initial_pos`, `pos`)
+--- for charwise exclusive motion. Positions are (1, 0) indexed.
 ---
---- @param pos table<integer, integer> Note: modified.
---- @param context table? Context from `create_context()`
---- @param initial_pos table<integer, integer>? Cursor position at the start of the current mapping. Defaults to the current cursor position. Note: modified.
---- @return boolean: False if couldn't set the positions. Don't forget to reset the cursor position if you changed it previously!
+--- @param pos table<integer, integer>
+--- @param initial_pos table<integer, integer> Cursor position at the start of the current mapping.
+--- @param context table Context from `create_context()`
+---
+--- @return table<integer, integer>?, table<integer, integer>?: if only the first value is not nil, then endpoint can be defined by setting cursor position to it, if both are not nil, then visual selection needs to be used. Otherwise the motion is empty and no positions need to be set.
 function M.motion_endpoint(pos, initial_pos, context)
-    if not context then context = u.create_context() end
     local lines = context.lines
-
-    if not initial_pos then initial_pos = vim.api.nvim_win_get_cursor(0) end
 
     u.clamp_pos(pos, context)
     u.clamp_pos(initial_pos, context)
 
-    -- handle edgecase described below :h :delete
-    -- also incidentally handles edgecases in :h exclusive
-    -- (since end position cannot be in first col of the same line)
+    -- Handle edgecase described below :h :delete .
+    -- Also incidentally handles edgecases in :h exclusive
+    -- (since end position cannot be in first col of the same line).
     if pos[1] == initial_pos[1] then
         if pos[2] < #lines[pos[1]] then
-            if u.is_same_char(pos, initial_pos, context) then return false end
-            vim.api.nvim_win_set_cursor(0, pos)
-            return true
-        end
-
-        -- Note: in cases like all,none   none doesn't matter
-        if context.virtualedit then
-            if pos[2] == initial_pos[2] then return false end
-            vim.api.nvim_win_set_cursor(0, pos)
-            return true
-        end
+            if u.is_same_char(pos, initial_pos, context) then return end
+            return pos
+        elseif pos[2] == initial_pos[2] then return
+        elseif context.virtualedit then return pos end -- Note: in cases like all,none  none doesn't matter
     end
 
-    if not M.range_to_visual(pos, initial_pos, context) then return false end
-    u.visual_set_pos(pos, initial_pos)
-    return true
+    if not M.range_to_visual(pos, initial_pos, context) then return end
+    return pos, initial_pos
+end
+
+--- Sets charwise range [`pos`, `initial_pos`) or [`initial_pos`, `pos`)
+--- as positions for a custom motion. Positions are (1, 0) indexed.
+---
+--- @param pos table<integer, integer> Note: modified.
+--- @param initial_pos table<integer, integer>? Cursor position at the start of the current mapping. Defaults to the current cursor position. Note: modified.
+--- @param context table? Context from `create_context()`
+--- @return boolean: False if couldn't set the positions. Don't forget to reset the cursor position if you changed it previously!
+function M.motion_set_endpoint(pos, initial_pos, context)
+    if not context then context = u.create_context() end
+    if not initial_pos then initial_pos = vim.api.nvim_win_get_cursor(0) end
+
+    local p1, p2 = M.motion_endpoint(pos, initial_pos, context)
+    if p1 then
+        if p2 then
+            u.visual_set_pos(p1, p2)
+        else
+            vim.api.nvim_win_set_cursor(0, p1)
+        end
+        return true
+    end
+    return false
 end
 
 
