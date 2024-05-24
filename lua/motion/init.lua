@@ -31,13 +31,14 @@ function M.range_to_visual(p1, p2, context)
     u.move_to_cur(pos_f, context)
     u.move_to_prev(pos_l, context)
 
-    if sel == 'inclusive' then
+    -- Note: old + virtualedit ~= inclusive  (if old and ends in EOL, it is ignored)
+    if sel == 'inclusive' or (sel == 'old' and context.virtualedit) then
         return not u.pos_lt(pos_l, pos_f)
     end
 
     assert(sel == 'old')
-    -- Do the best we can, since EOLs aren't always selectable at endpoints.
-    if pos_f[2] >= math.max(#lines[pos_f[1]], 1) and not context.virtualedit then
+
+    if pos_f[2] > 0 and pos_f[2] >= #lines[pos_f[1]] then
         assert(pos_f[1] < lines_count)
         pos_f[1] = pos_f[1] + 1
         pos_f[2] = 0
@@ -67,7 +68,7 @@ function M.range_inclusive_to_visual(p1, p2, context)
     u.clamp_pos(p2, context)
 
     local sel = context.selection
-    if sel == 'inclusive' then
+    if sel == 'inclusive' or (sel == 'old' and context.virtualedit) then
         return true
     end
 
@@ -82,18 +83,14 @@ function M.range_inclusive_to_visual(p1, p2, context)
 
     assert(sel == 'old')
 
-    if pos_f[2] > 0 and pos_f[2] >= #lines[pos_f[1]] and not context.virtualedit then
+    if pos_f[2] > 0 and pos_f[2] >= #lines[pos_f[1]] then
         if pos_f[1] >= lines_count then return false end -- last EOL in file
         pos_f[1] = pos_f[1] + 1
         pos_f[2] = 0
     end
 
-    -- Note: virtualedit does nothing for end, so might as well move
-    if pos_l[2] > 0 then
-        local end_line_len = #lines[pos_l[1]]
-        if pos_l[2] >= end_line_len then
-            pos_l[2] = end_line_len - 1
-        end
+    if pos_l[2] > 0 and pos_l[2] >= #lines[pos_l[1]] then
+        pos_l[2] = #lines[pos_l[1]] - 1
     end
 
     return not u.pos_lt(pos_l, pos_f)
