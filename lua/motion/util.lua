@@ -25,6 +25,10 @@ local Context = {
 
             rawset(tab, k, c)
             return c
+        elseif k == 'selection' then
+            local v = vim.api.nvim_get_option_value('selection', {})
+            rawset(tab, k, v)
+            return v
         end
     end
 }

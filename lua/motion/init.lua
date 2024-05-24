@@ -19,7 +19,7 @@ function M.range_to_visual(p1, p2, context)
     u.clamp_pos(p1, context)
     u.clamp_pos(p2, context)
 
-    local sel = vim.api.nvim_get_option_value('selection', {})
+    local sel = context.selection
     if sel == 'exclusive' then
         return not u.is_same_char(p1, p2, context)
     end
@@ -66,8 +66,10 @@ function M.range_inclusive_to_visual(p1, p2, context)
     u.clamp_pos(p1, context)
     u.clamp_pos(p2, context)
 
-    local sel = vim.api.nvim_get_option_value('selection', {})
-    if sel == 'inclusive' then return true end
+    local sel = context.selection
+    if sel == 'inclusive' then
+        return true
+    end
 
     local pos_f, pos_l
     if u.pos_lt(p1, p2) then pos_f, pos_l = p1, p2
