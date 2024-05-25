@@ -139,9 +139,7 @@ function M.move_to_next(pos, context)
     local line = lines[pos[1]]
 
     if pos[2] == #line then
-        if pos[1] == lines_count then
-            pos[2] = #line
-        else
+        if pos[1] < lines_count then
             pos[1] = pos[1] + 1
             pos[2] = 0
         end
@@ -170,9 +168,7 @@ function M.move_to_prev(pos, context)
     -- So many cases just bc charidx(line, #line) is not #chars in line...
     -- Even though corresponding is true for byteidx...
     if #line == 0 then
-        if pos[1] == 1 then
-            pos[2] = 0
-        else
+        if pos[1] > 1 then
             pos[1] = pos[1] - 1
             pos[2] = #lines[pos[1]]
         end
@@ -189,12 +185,9 @@ function M.move_to_prev(pos, context)
     local ci = vim.fn.charidx(line, pos[2])
     assert(ci >= 0)
     if ci == 0 then
-        if pos[1] == 1 then
-            pos[2] = 0
-        else
+        if pos[1] > 1 then
             pos[1] = pos[1] - 1
-            line = lines[pos[1]]
-            pos[2] = #line
+            pos[2] = #lines[pos[1]]
         end
     else
         local bi = vim.fn.byteidx(line, ci - 1)
