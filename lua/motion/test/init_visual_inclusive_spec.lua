@@ -74,6 +74,7 @@ tests = {
     { 'normal', { 'abc' }, { 1, 0 }, { 1, 3 } },
     { 'OOB', { 'abc', 'defg' }, { 0, 100 }, { 3, -1 } },
     { 'multibyte', { 'a\xC2\xB5\xCC\x81\xCC\x83b', '\xC2\xB5\xCC\x81\xCC\x83' }, { 1, 4 }, { 2, 3 } },
+    { 'same multibyte', { 'a\xC2\xB5\xCC\x81\xCC\x83b' }, { 1, 4 }, { 1, 4 } },
 
     { 'EOL first char', { 'abc', 'defg' }, { 1, 3 }, { 2, 0 } },
     { 'EOL last char', { 'abc', 'defg' }, { 1, 2 }, { 1, 3 } },
@@ -87,6 +88,7 @@ test('Selection exclusive', { 'exclusive' }, {
     { 1, 0 }, { 1, 3 },
     { 1, 0 }, { 2, 4 },
     { 1, 4 }, { 2, 6 }, -- start doesn't need adjustment
+    { 1, 4 }, { 1, 7 },
 
     { 1, 3 }, { 2, 1 },
     { 1, 2 }, { 2, 0 },
@@ -100,6 +102,7 @@ test('Selection inclusive', { 'inclusive' }, {
     { 1, 0 }, { 1, 3 },
     { 1, 0 }, { 2, 4 },
     { 1, 4 }, { 2, 3 }, -- native inclusive selection, no adj. needed
+    { 1, 4 }, { 1, 4 },
 
     { 1, 3 }, { 2, 0 },
     { 1, 2 }, { 1, 3 },
@@ -113,6 +116,7 @@ test('Selection old, virtualedit', { 'old', true }, {
     { 1, 0 }, { 1, 3 },
     { 1, 0 }, { 2, 4 }, -- last EOL not selectable, has no effect
     { 1, 4 }, { 2, 3 }, -- native inclusive selection, no adj. needed
+    { 1, 4 }, { 1, 4 },
 
     { 1, 3 }, { 2, 0 },
     { 1, 2 }, { 1, 3 },
@@ -126,6 +130,7 @@ test('Selection old, no virtualedit', { 'old', false }, {
     { 1, 0 }, { 1, 2 },
     { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
     { 1, 4 }, { 2, 3 }, -- native inclusive selection, no adj. needed
+    { 1, 4 }, { 1, 4 },
 
     { 2, 0 }, { 2, 0 },
     { 1, 2 }, { 1, 2 },
