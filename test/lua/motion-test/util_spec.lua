@@ -1,7 +1,7 @@
 -- note \x12 is luajit...
 local it = require('motion.util')
 
-local h = require('motion.test.helpers')
+local h = require('motion-test.helpers')
 
 local function test_char(func, lines, expected)
     local context = { lines = lines, lines_count = #lines }

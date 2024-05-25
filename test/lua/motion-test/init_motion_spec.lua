@@ -1,5 +1,5 @@
 local util = require('motion.util')
-local h = require('motion.test.helpers')
+local h = require('motion-test.helpers')
 
 local it = require('motion')
 
