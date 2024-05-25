@@ -74,10 +74,13 @@ tests = {
     { 'normal', { 'abc' }, { 1, 0 }, { 1, 3 } },
     { 'OOB', { 'abc', 'defg' }, { 0, 100 }, { 3, -1 } },
     { 'multibyte', { 'a\xC2\xB5\xCC\x81\xCC\x83b', '\xC2\xB5\xCC\x81\xCC\x83' }, { 1, 4 }, { 2, 3 } },
+
     { 'EOL first char', { 'abc', 'defg' }, { 1, 3 }, { 2, 0 } },
     { 'EOL last char', { 'abc', 'defg' }, { 1, 2 }, { 1, 3 } },
     { 'EOL only char', { 'abc', 'defg' }, { 1, 3 }, { 1, 3 } },
     { 'EOL empty line', { 'abc', '' }, { 1, 2 }, { 1, 3 } },
+
+    { 'past the end', { 'abc' }, { 1, 3 }, { 1, 3 } },
 }
 
 test('Selection exclusive', { 'exclusive' }, {
@@ -89,6 +92,8 @@ test('Selection exclusive', { 'exclusive' }, {
     { 1, 2 }, { 2, 0 },
     { 1, 3 }, { 2, 0 },
     { 1, 2 }, { 2, 0 },
+
+    { 1, 3 }, { 1, 3 } -- empty selection still selects one character (but last EOL is not selectable anyway)
 })
 
 test('Selection inclusive', { 'inclusive' }, {
@@ -100,6 +105,8 @@ test('Selection inclusive', { 'inclusive' }, {
     { 1, 2 }, { 1, 3 },
     { 1, 3 }, { 1, 3 },
     { 1, 2 }, { 1, 3 },
+
+    { 1, 3 }, { 1, 3 },
 })
 
 test('Selection old, virtualedit', { 'old', true }, {
@@ -111,6 +118,8 @@ test('Selection old, virtualedit', { 'old', true }, {
     { 1, 2 }, { 1, 3 },
     { 1, 3 }, { 1, 3 },
     { 1, 2 }, { 1, 3 },
+
+    { 1, 3 }, { 1, 3 },
 })
 
 test('Selection old, no virtualedit', { 'old', false }, {
@@ -122,4 +131,6 @@ test('Selection old, no virtualedit', { 'old', false }, {
     { 1, 2 }, { 1, 2 },
     nil, nil,
     { 1, 2 }, { 1, 2 },
+
+    nil, nil,
 })

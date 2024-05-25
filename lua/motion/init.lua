@@ -39,7 +39,7 @@ function M.range_to_visual(p1, p2, context)
     assert(sel == 'old')
 
     if pos_f[2] > 0 and pos_f[2] >= #lines[pos_f[1]] then
-        assert(pos_f[1] < lines_count)
+        if pos_f[1] >= lines_count then return false end
         pos_f[1] = pos_f[1] + 1
         pos_f[2] = 0
     end
