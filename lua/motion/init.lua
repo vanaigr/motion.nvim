@@ -141,7 +141,7 @@ function M.motion_set_endpoint(pos, initial_pos, context)
     local p1, p2 = M.motion_endpoint(pos, initial_pos, context)
     if p1 then
         if p2 then
-            u.visual_set_pos(p1, p2)
+            u.visual_start(p1, p2)
         else
             vim.api.nvim_win_set_cursor(0, p1)
         end

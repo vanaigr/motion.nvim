@@ -1,3 +1,30 @@
+A helper plugin for setting charwise motion and visual selection endpoints.
+
+Handles `virtualedit`, `selection`, as well as multibyte and composing characters.
+
+# Usage
+
+```lua
+local motion = require('motion')
+
+vim.keymap.set('o', 'my-motion', function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local end_pos = { cursor[1] - 1, vim.v.maxcol }
+    motion.motion_set_endpoint(end_pos, cursor)
+end, { desc = 'selects until the end of the previous line' })
+
+vim.keymap.set('n', 'my-visual', function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local end_pos = { cursor[1] + 1, vim.v.maxcol }
+    if motion.range_inclusive_to_visual(end_pos, cursor) then
+        motion.util.visual_start(cursor, end_pos)
+    end
+end, {
+    desc = 'starts visual selection from the current position'
+        .. ' to the end of the next line, including both ends',
+})
+```
+
 # Testing
 
 ```lua

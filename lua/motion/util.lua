@@ -43,7 +43,7 @@ function M.create_context()
     }, Context)
 end
 
-function M.visual_set_pos(p1, p2)
+function M.visual_start(p1, p2)
     -- Enter visual first! Positions might be valid only in visual
     vim.cmd([[noautocmd normal! v]])
     vim.api.nvim_win_set_cursor(0, p1)
