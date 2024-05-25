@@ -4,6 +4,8 @@ local u = require('motion.util')
 
 local M = {}
 
+M.util = u
+
 --- Modifies endpoints from range [`p1`, `p2`) or [`p2`, `p1`)
 --- for charwise visual selection. Positions are (1, 0) indexed.
 ---
