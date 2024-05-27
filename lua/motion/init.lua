@@ -1,6 +1,7 @@
 local vim = vim
 
-local u = require('motion.util')
+local path = ...
+local u = require(path..'.util')
 
 local M = {}
 

@@ -30,10 +30,10 @@ end, {
 ```lua
 local vim = vim
 
-local function reload()
+local function run_test()
     vim.cmd('mes clear')
 
-    local plugin_path = [[]]
+    local plugin_path =
     -- if not installed as a plugin
     -- vim.opt.rtp:prepend(plugin_path)
     vim.opt.rtp:prepend(plugin_path .. '/test')
