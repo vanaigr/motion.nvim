@@ -14,10 +14,10 @@ vim.keymap.set('o', 'my-motion', function()
 end, { desc = 'selects until the end of the previous line' })
 
 vim.keymap.set('n', 'my-visual', function()
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    local end_pos = { cursor[1] + 1, vim.v.maxcol }
-    if motion.range_inclusive_to_visual(end_pos, cursor) then
-        motion.util.visual_start(cursor, end_pos)
+    local p1 = vim.api.nvim_win_get_cursor(0)
+    local p2 = { p1[1] + 1, vim.v.maxcol }
+    if motion.range_inclusive_to_visual(p1, p2) then
+        motion.util.visual_start(p1, p2)
     end
 end, {
     desc = 'starts visual selection from the current position'
