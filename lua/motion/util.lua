@@ -9,15 +9,32 @@ local Lines = {
 }
 local Context = {
     __index = function(tab, k)
-        if k == 'virtualedit' then
-            local ve = vim.split(
+        if k == '__virtualedit' then
+            local v = vim.split(
                 vim.api.nvim_get_option_value('virtualedit', {}),
                 ',', { plain = true }
             )
+            rawset(tab, k, v)
+            return v
+        elseif k == 'virtualedit' then
+            local ve = tab.__virtualedit
 
             local c = false
             for _, v in ipairs(ve) do
                 if v == 'all' or v == 'onemore' then
+                    c = true
+                    break
+                end
+            end
+
+            rawset(tab, k, c)
+            return c
+        elseif k == 'blockwise_virtualedit' then
+            local ve = tab.__virtualedit
+
+            local c = false
+            for _, v in ipairs(ve) do
+                if v == 'all' or v == 'onemore' or v == 'block' then
                     c = true
                     break
                 end
@@ -43,9 +60,14 @@ function M.create_context()
     }, Context)
 end
 
-function M.visual_start(p1, p2)
+--- @param p1 table<integer, integer>
+--- @param p2 table<integer, integer>
+--- @param mode nil | "v" | "V" | "" Visual mode, default "v"
+function M.visual_start(p1, p2, mode)
+    if not mode then mode = 'v'
+    else assert(mode == 'v' or mode == 'V' or mode == '') end
     -- Enter visual first! Positions might be valid only in visual
-    vim.cmd([[noautocmd normal! v]])
+    vim.cmd([[noautocmd normal! ]]..mode)
     vim.api.nvim_win_set_cursor(0, p1)
     vim.cmd([[noautocmd normal! o]])
     vim.api.nvim_win_set_cursor(0, p2)
