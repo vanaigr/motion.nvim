@@ -1,7 +1,10 @@
-A helper plugin for setting charwise and linewise motion and visual selection endpoints.
+A helper plugin for defining consistent charwise and linewise motions and visual selection endpoints.
 
-Handles `virtualedit`, `selection`, multibyte and composing characters,
-and forced motions (except blockwise).
+You can read about (neo)vim's inconsistencies this plugin aims to address
+[here](https://www.reddit.com/r/neovim/comments/1d14rdy/defining_motions_correctly/).
+
+This plugin is also designed to correctly handle multibyte and composing characters,
+as well as forced motions ([except blockwise](https://www.reddit.com/r/neovim/comments/1d14rdy/comment/l6jy3rz/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)).
 
 # Usage
 
