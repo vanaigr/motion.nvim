@@ -3,6 +3,10 @@ local it = require('motion.util')
 
 local h = require('motion-test.helpers')
 
+local function from_bool(bool)
+    if bool then return 't' else return 'f' end
+end
+
 local function test_char(func, lines, expected)
     local context = { lines = lines, lines_count = #lines }
 
@@ -12,13 +16,14 @@ local function test_char(func, lines, expected)
     local ri = 1
     for j = 1, context.lines_count do
         for i = 0, #context.lines[j] do
-            local act = func({ j, i }, context)
+            local act = { j, i }
+            local act_res = func(act, context)
             local exp = expected[ri]
             ri = ri + 1
-            if not it.pos_eq(act, exp) then
-                msg = msg..'\n    '
-                    ..'    at '..j..':'..i..', expected='..h.pos_to_string(exp)
-                    ..', actual='..h.pos_to_string(act)
+            if not it.pos_eq(act, exp) or act_res ~= exp[3] then
+                msg = msg ..'\n    at '..j..':'..i
+                    ..', expected='..h.pos_to_string(exp)..'-'..from_bool(exp[3])
+                    ..', actual='..h.pos_to_string(act)..'-'..from_bool(act_res)
                 ok = false
             end
         end
@@ -38,42 +43,42 @@ end
 
 test_chars(
     'empty', { '', '' },
-    { { 1, 0 }, { 1, 0 } },
-    { { 1, 0 }, { 2, 0 } },
-    { { 2, 0 }, { 2, 0 } }
+    { { 1, 0, false }, { 1, 0, true } },
+    { { 1, 0, nil }, { 2, 0, nil } },
+    { { 2, 0, true }, { 2, 0, false } }
 )
 
 test_chars(
     'multibyte', { 'a', 'a€' },
     {
-        { 1, 0 }, { 1, 0 },
-        { 1, 1 }, { 2, 0 }, { 2, 0 }, { 2, 0 }, { 2, 1 },
+        { 1, 0, false }, { 1, 0, true },
+        { 1, 1, true }, { 2, 0, true }, { 2, 0, true }, { 2, 0, true }, { 2, 1, true },
     },
     {
-        { 1, 0 }, { 1, 1 },
-        { 2, 0 }, { 2, 1 }, { 2, 1 }, { 2, 1 }, { 2, 4 },
+        { 1, 0, nil }, { 1, 1, nil },
+        { 2, 0, nil }, { 2, 1, nil }, { 2, 1, nil }, { 2, 1, nil }, { 2, 4, nil },
     },
     {
-        { 1, 1 }, { 2, 0 },
-        { 2, 1 }, { 2, 4 }, { 2, 4 }, { 2, 4 }, { 2, 4 }
+        { 1, 1, true }, { 2, 0, true },
+        { 2, 1, true }, { 2, 4, true }, { 2, 4, true }, { 2, 4, true }, { 2, 4, false },
     }
 )
 
 test_chars(
     'multi-code-point', { '', '\xC2\xB5\xCC\x81\xCC\x83', '' },
     {
-        { 1, 0 },
-        { 1, 0 }, { 1, 0 }, { 1, 0 }, { 1, 0 }, { 1, 0 }, { 1, 0 }, { 2, 0 },
-        { 2, 6 },
+        { 1, 0, false },
+        { 1, 0, true }, { 1, 0, true }, { 1, 0, true }, { 1, 0, true }, { 1, 0, true }, { 1, 0, true }, { 2, 0, true },
+        { 2, 6, true },
     },
     {
-        { 1, 0 },
-        { 2, 0 }, { 2, 0 }, { 2, 0 }, { 2, 0 }, { 2, 0 }, { 2, 0 }, { 2, 6 },
-        { 3, 0 },
+        { 1, 0, nil },
+        { 2, 0, nil }, { 2, 0, nil }, { 2, 0, nil }, { 2, 0, nil }, { 2, 0, nil }, { 2, 0, nil }, { 2, 6, nil },
+        { 3, 0, nil },
     },
     {
-        { 2, 0 },
-        { 2, 6 }, { 2, 6 }, { 2, 6 }, { 2, 6 }, { 2, 6 }, { 2, 6 }, { 3, 0 },
-        { 3, 0 },
+        { 2, 0, true },
+        { 2, 6, true }, { 2, 6, true }, { 2, 6, true }, { 2, 6, true }, { 2, 6, true }, { 2, 6, true }, { 3, 0, true },
+        { 3, 0, false },
     }
 )

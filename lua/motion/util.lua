@@ -132,7 +132,7 @@ end
 ---
 --- @param pos table<integer, integer> (1, 0) indexed clamped position
 --- @param context table Context from `create_context()`
---- @return table<integer, integer>: `pos`
+--- @return nil: not specified, may change
 function M.move_to_cur(pos, context)
     local lines = context.lines
     local line = lines[pos[1]]
@@ -145,8 +145,6 @@ function M.move_to_cur(pos, context)
         assert(bi >= 0)
         pos[2] = bi
     end
-
-    return pos
 end
 
 --- Modifies `pos` to point to the first byte of the next character.
@@ -154,18 +152,20 @@ end
 ---
 --- @param pos table<integer, integer> (1, 0) indexed clamped position
 --- @param context table Context from `create_context()`
---- @return table<integer, integer>: `pos`
+--- @return boolean: if `pos` points to the next char (false if would be OOB; `pos` is normalized)
 function M.move_to_next(pos, context)
     local lines = context.lines
     local lines_count = context.lines_count
     local line = lines[pos[1]]
 
     if pos[2] == #line then
-        if pos[1] < lines_count then
+        if pos[1] == lines_count then
+            return false
+        else
             pos[1] = pos[1] + 1
             pos[2] = 0
+            return true
         end
-        return pos
     end
 
     local ci = vim.fn.charidx(line, pos[2])
@@ -174,7 +174,7 @@ function M.move_to_next(pos, context)
     local bi = vim.fn.byteidx(line, ci + 1)
     assert(bi >= 0)
     pos[2] = bi
-    return pos
+    return true
 end
 
 --- Modifies `pos` to point to the first byte of the previous character.
@@ -182,7 +182,7 @@ end
 ---
 --- @param pos table<integer, integer> (1, 0) indexed clamped position
 --- @param context table Context from `create_context()`
---- @return table<integer, integer>: `pos`
+--- @return boolean: if `pos` points to the next char (false if would be OOB; `pos` is normalized)
 function M.move_to_prev(pos, context)
     local lines = context.lines
     local line = lines[pos[1]]
@@ -190,34 +190,37 @@ function M.move_to_prev(pos, context)
     -- So many cases just bc charidx(line, #line) is not #chars in line...
     -- Even though corresponding is true for byteidx...
     if #line == 0 then
-        if pos[1] > 1 then
+        if pos[1] == 1 then
+            return false
+        else
             pos[1] = pos[1] - 1
             pos[2] = #lines[pos[1]]
+            return true
         end
-        return pos
     elseif pos[2] == #line then
         local ci = vim.fn.charidx(line, #line - 1)
         assert(ci >= 0)
         local bi = vim.fn.byteidx(line, ci)
         assert(bi >= 0)
         pos[2] = bi
-        return pos
+        return true
     end
 
     local ci = vim.fn.charidx(line, pos[2])
     assert(ci >= 0)
     if ci == 0 then
-        if pos[1] > 1 then
-            pos[1] = pos[1] - 1
-            pos[2] = #lines[pos[1]]
+        if pos[1] == 1 then
+            return false
         end
+        pos[1] = pos[1] - 1
+        pos[2] = #lines[pos[1]]
     else
         local bi = vim.fn.byteidx(line, ci - 1)
         assert(bi >= 0)
         pos[2] = bi
     end
 
-    return pos
+    return true
 end
 
 return M
