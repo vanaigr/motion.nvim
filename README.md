@@ -32,7 +32,8 @@ end, {
 # Testing
 
 ```lua
-local plugin_path =
+local plugin_path = ''
+
 -- if not installed as a plugin
 -- vim.opt.rtp:prepend(plugin_path)
 vim.opt.rtp:prepend(plugin_path .. '/test')
@@ -53,10 +54,6 @@ local function run_test()
     print('-----inclusive-visual-----')
     package.loaded['motion-test.init_visual_inclusive_spec'] = nil
     require('motion-test.init_visual_inclusive_spec')
-
-    print('-----motion-----')
-    package.loaded['motion-test.init_motion_spec'] = nil
-    require('motion-test.init_motion_spec')
 
     print('-----textobj-calc-endpoints-----')
     package.loaded['motion-test.init_textobj_calc_endpoints_spec'] = nil
