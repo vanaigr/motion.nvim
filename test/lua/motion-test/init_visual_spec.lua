@@ -104,7 +104,7 @@ test('Selection inclusive', { 'inclusive' }, {
     nil, nil,
 })
 
-test('Selection old, virtualedit', { 'old', true }, {
+test('Selection old, virtualedit', { 'old', { onemore = true } }, {
     { 1, 0 }, { 1, 2 },
     { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
     { 1, 1 }, { 1, 8 },
@@ -116,7 +116,7 @@ test('Selection old, virtualedit', { 'old', true }, {
     nil, nil,
 })
 
-test('Selection old, no virtualedit', { 'old', false }, {
+test('Selection old, no virtualedit', { 'old', {} }, {
     { 1, 0 }, { 1, 2 },
     { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
     { 1, 1 }, { 1, 7 },

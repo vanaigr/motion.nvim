@@ -7,57 +7,34 @@ local Lines = {
         return line
     end,
 }
-local Context = {
-    __index = function(tab, k)
-        if k == '__virtualedit' then
-            local v = vim.split(
-                vim.api.nvim_get_option_value('virtualedit', {}),
-                ',', { plain = true }
-            )
-            rawset(tab, k, v)
-            return v
-        elseif k == 'virtualedit' then
-            local ve = tab.__virtualedit
+local M = {}
 
-            local c = false
-            for _, v in ipairs(ve) do
-                if v == 'all' or v == 'onemore' then
-                    c = true
-                    break
-                end
-            end
-
-            rawset(tab, k, c)
-            return c
-        elseif k == 'blockwise_virtualedit' then
-            local ve = tab.__virtualedit
-
-            local c = false
-            for _, v in ipairs(ve) do
-                if v == 'all' or v == 'onemore' or v == 'block' then
-                    c = true
-                    break
-                end
-            end
-
-            rawset(tab, k, c)
-            return c
-        elseif k == 'selection' then
-            local v = vim.api.nvim_get_option_value('selection', {})
-            rawset(tab, k, v)
-            return v
+local function prep_ve()
+    local values = vim.split(
+        vim.api.nvim_get_option_value('virtualedit', {}),
+        ',', { plain = true }
+    )
+    local res = {}
+    for _, v in ipairs(values) do
+        if v == 'onemore' then
+            res.onemore = true
+        elseif v == 'all' then
+            res.all = true
+        elseif v == 'block' then
+            res.block = true
         end
     end
-}
-
-local M = {}
+    return res
+end
 
 --- @return table
 function M.create_context()
-    return setmetatable({
+    return {
         lines = setmetatable({}, Lines),
         lines_count = vim.api.nvim_buf_line_count(0),
-    }, Context)
+        virtualedit = prep_ve(),
+        selection = vim.api.nvim_get_option_value('selection', {}),
+    }
 end
 
 --- @param p1 table<integer, integer>
@@ -182,7 +159,7 @@ end
 ---
 --- @param pos table<integer, integer> (1, 0) indexed clamped position
 --- @param context table Context from `create_context()`
---- @return boolean: if `pos` points to the next char (false if would be OOB; `pos` is normalized)
+--- @return boolean: if `pos` points to the previous char (false if would be OOB; `pos` is normalized)
 function M.move_to_prev(pos, context)
     local lines = context.lines
     local line = lines[pos[1]]

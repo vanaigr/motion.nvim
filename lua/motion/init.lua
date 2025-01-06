@@ -35,7 +35,7 @@ function M.range_to_visual(p1, p2, context)
     u.move_to_prev(pos_l, context)
 
     -- Note: old + virtualedit ~= inclusive  (if old and ends in EOL, it is ignored)
-    if sel == 'inclusive' or (sel == 'old' and context.virtualedit) then
+    if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore)) then
         return not u.pos_lt(pos_l, pos_f)
     end
 
@@ -71,7 +71,7 @@ function M.range_inclusive_to_visual(p1, p2, context)
     u.clamp_pos(p2, context)
 
     local sel = context.selection
-    if sel == 'inclusive' or (sel == 'old' and context.virtualedit) then
+    if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore)) then
         return true
     end
 
@@ -146,7 +146,7 @@ function M.textobj_calc_endpoints(p1, p2, opts)
 
         local sel = context.selection
         if incl then
-            if sel == 'inclusive' or (sel == 'old' and context.blockwise_virtualedit) then
+            if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore or context.virtualedit.block)) then
                 return ''
             elseif sel == 'old' then
                 local lines = context.lines

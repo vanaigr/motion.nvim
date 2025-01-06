@@ -10,7 +10,7 @@ local function test(context_opts, opts, p1, p2, mode, e1, e2)
                 return #t.lines
             end
             local v = context_opts[k]
-            assert(v ~= nil, k)
+            assert(v ~= nil, tostring(k) .. ' is nil')
             return v
         end
     })
@@ -45,7 +45,7 @@ test(
     { 1, 0 }, { 1, 3 }, 'v', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', virtualedit = false, lines = { 'abc' } }, { mode ='v', inclusive = false },
+    { selection = 'old', virtualedit = '', lines = { 'abc' } }, { mode ='v', inclusive = false },
     { 1, 0 }, { 1, 3 }, 'v', { 1, 0 }, { 1, 2 }
 )
 
@@ -78,11 +78,11 @@ test(
     { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', blockwise_virtualedit = true, lines = { 'abc' } },
+    { selection = 'old', virtualedit = 'block', lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', blockwise_virtualedit = false, lines = { 'abc' } },
+    { selection = 'old', virtualedit = '', lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 
@@ -94,7 +94,7 @@ test(
 test({ selection = 'inclusive', lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 1 }, nil)
 test({ selection = 'old', lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 3 }, nil)
 test(
-    { selection = 'old', blockwise_virtualedit = false, lines = { 'abc' } },
+    { selection = 'old', virtualedit = '', lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 3 }, nil
 )
 

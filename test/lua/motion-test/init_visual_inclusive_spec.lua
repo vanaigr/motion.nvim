@@ -112,7 +112,7 @@ test('Selection inclusive', { 'inclusive' }, {
     { 1, 3 }, { 1, 3 },
 })
 
-test('Selection old, virtualedit', { 'old', true }, {
+test('Selection old, virtualedit', { 'old', { onemore = true } }, {
     { 1, 0 }, { 1, 3 },
     { 1, 0 }, { 2, 4 }, -- last EOL not selectable, has no effect
     { 1, 4 }, { 2, 3 }, -- native inclusive selection, no adj. needed
@@ -126,7 +126,7 @@ test('Selection old, virtualedit', { 'old', true }, {
     { 1, 3 }, { 1, 3 },
 })
 
-test('Selection old, no virtualedit', { 'old', false }, {
+test('Selection old, no virtualedit', { 'old', {} }, {
     { 1, 0 }, { 1, 2 },
     { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
     { 1, 4 }, { 2, 3 }, -- native inclusive selection, no adj. needed
