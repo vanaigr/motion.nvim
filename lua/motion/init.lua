@@ -7,6 +7,25 @@ local M = {}
 
 M.util = u
 
+--- @param pos_f table<integer, integer>
+--- @param pos_l table<integer, integer>
+--- @param context table Context from `create_context()`
+--- @return boolean?: Whether the selection can be created.
+local function adjust_ve_all(pos_f, pos_l, context)
+    local lines = context.lines
+
+    -- see #1
+    -- virtualedit=all makes EOL a space, which wasn't there.
+    -- Go back until last position is not at EOL.
+    if context.virtualedit.all then
+        while pos_l[2] == #lines[pos_l[1]] and not u.pos_lt(pos_l, pos_f) do
+            if not u.move_to_prev(pos_l, context) then
+                return false
+            end
+        end
+    end
+end
+
 --- Modifies endpoints from range [`p1`, `p2`) or [`p2`, `p1`)
 --- for charwise visual selection. Positions are (1, 0) indexed.
 ---
@@ -18,11 +37,11 @@ function M.range_to_visual(p1, p2, context)
     if not context then context = u.create_context() end
     local lines = context.lines
     local lines_count = context.lines_count
+    local sel = context.selection
 
     u.clamp_pos(p1, context)
     u.clamp_pos(p2, context)
 
-    local sel = context.selection
     if sel == 'exclusive' then
         return not u.is_same_char(p1, p2, context)
     end
@@ -34,8 +53,11 @@ function M.range_to_visual(p1, p2, context)
     u.move_to_cur(pos_f, context)
     u.move_to_prev(pos_l, context)
 
-    -- Note: old + virtualedit ~= inclusive  (if old and ends in EOL, it is ignored)
-    if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore)) then
+    if adjust_ve_all(pos_f, pos_l, context) == false then
+        return false
+    end
+
+    if sel == 'inclusive' then
         return not u.pos_lt(pos_l, pos_f)
     end
 
@@ -66,14 +88,10 @@ function M.range_inclusive_to_visual(p1, p2, context)
     if not context then context = u.create_context() end
     local lines = context.lines
     local lines_count = context.lines_count
+    local sel = context.selection
 
     u.clamp_pos(p1, context)
     u.clamp_pos(p2, context)
-
-    local sel = context.selection
-    if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore)) then
-        return true
-    end
 
     local pos_f, pos_l
     if u.pos_lt(p1, p2) then pos_f, pos_l = p1, p2
@@ -81,7 +99,18 @@ function M.range_inclusive_to_visual(p1, p2, context)
 
     if sel == 'exclusive' then
         u.move_to_next(pos_l, context)
-        return true
+        return not u.is_same_char(pos_f, pos_l, context)
+    end
+
+    u.move_to_cur(pos_f, context)
+    u.move_to_cur(pos_l, context)
+
+    if adjust_ve_all(pos_f, pos_l, context) == false then
+        return false
+    end
+
+    if sel == 'inclusive' then
+        return not u.pos_lt(pos_l, pos_f)
     end
 
     assert(sel == 'old')
@@ -146,7 +175,13 @@ function M.textobj_calc_endpoints(p1, p2, opts)
 
         local sel = context.selection
         if incl then
-            if sel == 'inclusive' or (sel == 'old' and (context.virtualedit.all or context.virtualedit.onemore or context.virtualedit.block)) then
+            if
+                context.virtualedit.all
+                or sel == 'inclusive'
+                or (sel == 'old'
+                    and (context.virtualedit.onemore
+                        or context.virtualedit.block))
+            then
                 return ''
             elseif sel == 'old' then
                 local lines = context.lines
@@ -157,6 +192,8 @@ function M.textobj_calc_endpoints(p1, p2, opts)
                 end
             end
         else
+            -- not guaranteed to work since which endpoint is excluded
+            -- is not defined.
             if sel == 'exclusive' then
                 if not u.is_same_char(p1, p2, context) then return '' end
             end

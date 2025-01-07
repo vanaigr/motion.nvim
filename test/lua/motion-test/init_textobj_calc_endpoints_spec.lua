@@ -41,11 +41,11 @@ test(
     { 1, 0 }, { 1, 3 }, 'v', { 1, 0 }, { 1, 3 }
 )
 test(
-    { selection = 'inclusive', lines = { 'abc' } }, { mode ='v' },
+    { selection = 'inclusive', virtualedit = {}, lines = { 'abc' } }, { mode ='v' },
     { 1, 0 }, { 1, 3 }, 'v', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', virtualedit = '', lines = { 'abc' } }, { mode ='v', inclusive = false },
+    { selection = 'old', virtualedit = {}, lines = { 'abc' } }, { mode ='v', inclusive = false },
     { 1, 0 }, { 1, 3 }, 'v', { 1, 0 }, { 1, 2 }
 )
 
@@ -74,27 +74,27 @@ test(
     { 1, 0 }, { 2, 0 }, '', { 1, 0 }, { 2, 0 } -- end point is not moved
 )
 test(
-    { selection = 'inclusive', lines = { 'abc' } }, { mode = '', inclusive = true },
+    { selection = 'inclusive', virtualedit = {}, lines = { 'abc' } }, { mode = '', inclusive = true },
     { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', virtualedit = 'block', lines = { 'abc' } },
+    { selection = 'old', virtualedit = { block = true }, lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 test(
-    { selection = 'old', virtualedit = '', lines = { 'abc' } },
+    { selection = 'old', virtualedit = {}, lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 2 }, '', { 1, 0 }, { 1, 2 }
 )
 
 print('  not supported')
 test(
-    { selection = 'exclusive', lines = { 'abc' } }, { mode = '', inclusive = true },
+    { selection = 'exclusive', virtualedit = {}, lines = { 'abc' } }, { mode = '', inclusive = true },
     { 1, 0 }, { 1, 1 }, nil
 )
-test({ selection = 'inclusive', lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 1 }, nil)
-test({ selection = 'old', lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 3 }, nil)
+test({ selection = 'inclusive', virtualedit = {}, lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 1 }, nil)
+test({ selection = 'old', virtualedit = {}, lines = { 'abc' } }, { mode = '', }, { 1, 0 }, { 1, 3 }, nil)
 test(
-    { selection = 'old', virtualedit = '', lines = { 'abc' } },
+    { selection = 'old', virtualedit = {}, lines = { 'abc' } },
     { mode = '', inclusive = true }, { 1, 0 }, { 1, 3 }, nil
 )
 

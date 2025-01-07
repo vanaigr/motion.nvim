@@ -78,9 +78,12 @@ tests = {
     { 'EOL empty line', { 'abc', '' }, { 1, 2 }, { 2, 0 } },
 
     { 'past the end', { 'abc' }, { 1, 3 }, { 1, 3 } },
+
+    { 'virtualedit=all', { 'abc', '', '', '' }, { 1, 3 }, { 4, 0 } },
+    { 'virtualedit=all #2', { 'abc', '', '', '' }, { 1, 0 }, { 4, 0 } },
 }
 
-test('Selection exclusive', { 'exclusive' }, {
+test('Selection exclusive', { 'exclusive', {} }, {
     { 1, 0 }, { 1, 3 },
     { 1, 0 }, { 2, 4 },
     { 1, 4 }, { 2, 3 }, -- native exclusive selection, no adj. needed
@@ -89,41 +92,73 @@ test('Selection exclusive', { 'exclusive' }, {
     { 1, 2 }, { 2, 0 },
     { 1, 3 }, { 2, 0 },
     { 1, 2 }, { 2, 0 },
+
     nil, nil,
+
+    { 1, 3 }, { 4, 0 },
+    { 1, 0 }, { 4, 0 },
 })
 
-test('Selection inclusive', { 'inclusive' }, {
+test('Selection inclusive', { 'inclusive', {} }, {
     { 1, 0 }, { 1, 2 },
-    { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
+    { 1, 0 }, { 2, 3 },
     { 1, 1 }, { 1, 8 },
 
     { 1, 3 }, { 2, 0 },
     { 1, 2 }, { 1, 3 },
     { 1, 3 }, { 1, 3 },
     { 1, 2 }, { 1, 3 },
+
     nil, nil,
+
+    { 1, 3 }, { 3, 0 },
+    { 1, 0 }, { 3, 0 },
 })
 
-test('Selection old, virtualedit', { 'old', { onemore = true } }, {
+test('Selection inclusive, virtualedit=all', { 'inclusive', { all = true } }, {
     { 1, 0 }, { 1, 2 },
-    { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
-    { 1, 1 }, { 1, 8 },
+    { 1, 0 }, { 2, 3 },
+    { 1, 1 }, { 1, 7 },
 
     { 1, 3 }, { 2, 0 },
-    { 1, 2 }, { 1, 3 },
-    { 1, 3 }, { 1, 3 },
-    { 1, 2 }, { 1, 3 },
+    { 1, 2 }, { 1, 2 },
     nil, nil,
+    { 1, 2 }, { 1, 2 },
+
+    nil, nil,
+
+    nil, nil,
+    { 1, 0 }, { 1, 2 },
 })
 
-test('Selection old, no virtualedit', { 'old', {} }, {
+test('Selection old', { 'old', {} }, {
     { 1, 0 }, { 1, 2 },
-    { 1, 0 }, { 2, 3 }, -- last EOL not selectable, has no effect
+    { 1, 0 }, { 2, 3 },
     { 1, 1 }, { 1, 7 },
 
     { 2, 0 }, { 2, 0 },
     { 1, 2 }, { 1, 2 },
     nil, nil,
     { 1, 2 }, { 1, 2 },
+
     nil, nil,
+
+    { 2, 0 }, { 3, 0 },
+    { 1, 0 }, { 3, 0 },
+})
+
+test('Selection old, virtualedit=all', { 'old', { all = true } }, {
+    { 1, 0 }, { 1, 2 },
+    { 1, 0 }, { 2, 3 },
+    { 1, 1 }, { 1, 7 },
+
+    { 2, 0 }, { 2, 0 },
+    { 1, 2 }, { 1, 2 },
+    nil, nil,
+    { 1, 2 }, { 1, 2 },
+
+    nil, nil,
+
+    nil, nil,
+    { 1, 0 }, { 1, 2 },
 })
